@@ -28,14 +28,14 @@ function ScrollToTop() {
 function AnimatedRoutes() {
   const location = useLocation();
   return (
-    // enter-only page animation: the old page unmounts immediately, so a
-    // interrupted transition can never leave a blank screen
-    <motion.div
-      key={location.pathname}
-      initial={{ opacity: 0, y: 14 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
-    >
+    <AnimatePresence mode="wait">
+      <motion.div
+        key={location.pathname}
+        initial={{ opacity: 0, y: 14 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -8 }}
+        transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+      >
         <Routes location={location}>
           <Route path="/" element={<Home />} />
           <Route path="/about" element={<About />} />
@@ -48,17 +48,24 @@ function AnimatedRoutes() {
           <Route path="/admin/panel" element={<Admin />} />
           <Route path="*" element={<Home />} />
         </Routes>
-    </motion.div>
+      </motion.div>
+    </AnimatePresence>
   );
 }
 
 export default function App() {
-  const [loading, setLoading] = useState(true);
+  // Only show loader once per browser session, never again on navigation
+  const [loading, setLoading] = useState(() => !sessionStorage.getItem("loaded"));
 
   useEffect(() => {
     initTheme(); // dark by default
-    const t = setTimeout(() => setLoading(false), 2600);
-    return () => clearTimeout(t);
+    if (loading) {
+      const t = setTimeout(() => {
+        setLoading(false);
+        sessionStorage.setItem("loaded", "1");
+      }, 2600);
+      return () => clearTimeout(t);
+    }
   }, []);
 
   return (
