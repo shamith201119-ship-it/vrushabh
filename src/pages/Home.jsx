@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { motion, useScroll, useTransform } from "framer-motion";
+import { motion, useScroll, useTransform } from "motion/react";
 import { useRef } from "react";
 import { useSite } from "../context/SiteContext";
 import { Counter, Marquee, Reveal, SectionHead } from "../components/ui";

@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 import { useSite } from "../context/SiteContext";
 
 export default function Loader() {

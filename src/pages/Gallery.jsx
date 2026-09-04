@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion } from "motion/react";
 import { useSite } from "../context/SiteContext";
 import { Photo, Reveal, SectionHead } from "../components/ui";
 import { BorderBeam, DotPattern, SpotlightCard } from "../components/fx";

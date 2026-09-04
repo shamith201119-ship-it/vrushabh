@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { HashRouter, Route, Routes, useLocation } from "react-router-dom";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion } from "motion/react";
 import { SiteProvider } from "./context/SiteContext";
 import Loader from "./components/Loader";
 import Navbar from "./components/Navbar";

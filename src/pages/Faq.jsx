@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion } from "motion/react";
 import { Reveal, SectionHead } from "../components/ui";
 import { BorderBeam, Meteors, MovingBorderLink, Sparkles, TextGenerate } from "../components/fx";
 

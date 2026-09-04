@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 import { useSite } from "../context/SiteContext";
 import { Reveal, SectionHead } from "../components/ui";
 import { BorderBeam, Carousel, GridPattern, Meteors, Sparkles, SpotlightCard } from "../components/fx";

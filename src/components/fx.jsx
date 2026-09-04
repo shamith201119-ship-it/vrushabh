@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { AnimatePresence, motion, useMotionValue, useScroll, useSpring, useTransform } from "framer-motion";
+import { AnimatePresence, motion, useMotionValue, useScroll, useSpring, useTransform } from "motion/react";
 import { Link } from "react-router-dom";
 
 /* ============ patterns ============ */

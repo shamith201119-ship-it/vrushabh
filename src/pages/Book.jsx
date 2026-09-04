@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion } from "motion/react";
 import { QRCodeSVG } from "qrcode.react";
 import { Link } from "react-router-dom";
 import { useSite } from "../context/SiteContext";

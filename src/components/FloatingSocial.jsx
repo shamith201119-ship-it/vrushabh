@@ -1,4 +1,4 @@
-import { motion, useScroll } from "framer-motion";
+import { motion, useScroll } from "motion/react";
 import { useEffect, useState } from "react";
 import { useSite } from "../context/SiteContext";
 

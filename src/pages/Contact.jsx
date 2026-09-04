@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 import { useSite } from "../context/SiteContext";
 import { Reveal, SectionHead } from "../components/ui";
 import { AuroraBackground, BorderBeam, BorderGlow, MovingBorderButton, Sparkles, SpotlightCard } from "../components/fx";

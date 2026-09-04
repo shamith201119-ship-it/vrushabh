@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
-import { AnimatePresence, motion, useScroll } from "framer-motion";
+import { AnimatePresence, motion, useScroll } from "motion/react";
 import { useSite } from "../context/SiteContext";
 import { LogoMark } from "./ui";
 import { getTheme, setTheme } from "../theme";

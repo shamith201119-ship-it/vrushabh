@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion } from "motion/react";
 import { Link, useNavigate } from "react-router-dom";
 import { useSite, fileToCompressedDataURL, DEFAULT_CONTENT } from "../context/SiteContext";
 import { LogoMark } from "../components/ui";

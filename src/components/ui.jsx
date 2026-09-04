@@ -1,4 +1,4 @@
-import { motion, useInView, animate } from "framer-motion";
+import { motion, useInView, animate } from "motion/react";
 import { useEffect, useRef, useState } from "react";
 import { useSite } from "../context/SiteContext";
 
