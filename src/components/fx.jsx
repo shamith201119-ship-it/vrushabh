@@ -612,6 +612,10 @@ export function ProfileCard({ photo, name, title, socials = [], className = "" }
   const rotateY = useSpring(useTransform(px, [0, 1], [-10, 10]), { stiffness: 160, damping: 16 });
   const glowX = useTransform(px, [0, 1], ["20%", "80%"]);
   const glowY = useTransform(py, [0, 1], ["15%", "85%"]);
+  const glowBackground = useTransform(
+    [glowX, glowY],
+    ([gx, gy]) => `radial-gradient(300px circle at ${gx} ${gy}, rgba(201,162,75,0.28), transparent 70%)`
+  );
 
   const onMove = (e) => {
     const r = ref.current.getBoundingClientRect();
@@ -632,12 +636,7 @@ export function ProfileCard({ photo, name, title, socials = [], className = "" }
         <motion.span
           aria-hidden
           className="pointer-events-none absolute inset-0"
-          style={{
-            background: useTransform(
-              [glowX, glowY],
-              ([gx, gy]) => `radial-gradient(300px circle at ${gx} ${gy}, rgba(201,162,75,0.28), transparent 70%)`
-            ),
-          }}
+          style={{ background: glowBackground }}
         />
         {/* image area */}
         <div className="relative aspect-[4/4.4] w-full overflow-hidden">
