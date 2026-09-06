@@ -1,6 +1,21 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { AnimatePresence, motion, useMotionValue, useScroll, useSpring, useTransform } from "motion/react";
+import { AnimatePresence, motion, animate, useMotionValue, useScroll, useSpring, useTransform } from "motion/react";
 import { Link } from "react-router-dom";
+
+
+/* ============ touch detection (mobile-only ambient animations) ============ */
+
+export function useIsTouch() {
+  const [touch, setTouch] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia("(pointer: coarse)");
+    const set = () => setTouch(mq.matches);
+    set();
+    mq.addEventListener?.("change", set);
+    return () => mq.removeEventListener?.("change", set);
+  }, []);
+  return touch;
+}
 
 /* ============ patterns ============ */
 
@@ -57,8 +72,40 @@ const BEAM_PATHS = [
   "M-100 540C-100 540 180 300 420 340C660 380 900 660 1140 700C1380 740 1620 540 1820 500",
 ];
 
+function MobileLightRays({ className = "" }) {
+  const rays = [
+    { left: "6%", w: 100, d: 7.5, delay: 0, c: "rgba(201,162,75,0.22)" },
+    { left: "24%", w: 150, d: 9.5, delay: 1.4, c: "rgba(179,36,31,0.18)" },
+    { left: "47%", w: 120, d: 8, delay: 0.8, c: "rgba(250,246,239,0.10)" },
+    { left: "67%", w: 160, d: 10.5, delay: 2.2, c: "rgba(201,162,75,0.16)" },
+    { left: "86%", w: 110, d: 8.5, delay: 3.1, c: "rgba(179,36,31,0.15)" },
+  ];
+  return (
+    <div aria-hidden className={`pointer-events-none absolute inset-0 overflow-hidden ${className}`}>
+      {rays.map((r, i) => (
+        <motion.span
+          key={i}
+          className="absolute -top-[15%] h-[130%] rounded-full blur-2xl"
+          style={{ left: r.left, width: r.w, background: `linear-gradient(to bottom, transparent, ${r.c}, transparent)` }}
+          animate={{ y: ["-6%", "6%", "-6%"], opacity: [0.4, 0.95, 0.4] }}
+          transition={{ duration: r.d, repeat: Infinity, ease: "easeInOut", delay: r.delay }}
+        />
+      ))}
+      <motion.span
+        aria-hidden
+        className="absolute left-1/2 top-16 h-56 w-56 -translate-x-1/2 rounded-full blur-3xl"
+        style={{ background: "radial-gradient(circle, rgba(201,162,75,0.22), transparent 70%)" }}
+        animate={{ x: ["-50%", "-30%", "-70%", "-50%"], y: [0, 40, -20, 0], scale: [1, 1.25, 0.9, 1] }}
+        transition={{ duration: 13, repeat: Infinity, ease: "easeInOut" }}
+      />
+    </div>
+  );
+}
+
 export function BackgroundBeams({ id, className = "" }) {
   const gid = `beam-${id}`;
+  const touch = useIsTouch();
+  if (touch) return <MobileLightRays className={className} />;
   return (
     <div aria-hidden className={`pointer-events-none absolute inset-0 overflow-hidden ${className}`}>
       <svg className="h-full w-full" viewBox="0 0 1720 800" preserveAspectRatio="none" fill="none">
@@ -176,6 +223,24 @@ export function AuroraBackground({ className = "" }) {
 
 export function SpotlightCard({ children, className = "", spotlight = "rgba(179,36,31,0.10)" }) {
   const ref = useRef(null);
+  const touch = useIsTouch();
+
+  // mobile: the light slowly wanders around the card by itself
+  useEffect(() => {
+    if (!touch || !ref.current) return;
+    const el = ref.current;
+    let raf;
+    const t0 = performance.now();
+    const loop = (t) => {
+      const sec = (t - t0) / 1000;
+      el.style.setProperty("--sx", `${50 + 34 * Math.sin(sec * 0.55)}%`);
+      el.style.setProperty("--sy", `${50 + 30 * Math.sin(sec * 0.4 + 1.3)}%`);
+      raf = requestAnimationFrame(loop);
+    };
+    raf = requestAnimationFrame(loop);
+    return () => cancelAnimationFrame(raf);
+  }, [touch]);
+
   const onMove = (e) => {
     const r = ref.current.getBoundingClientRect();
     ref.current.style.setProperty("--sx", `${e.clientX - r.left}px`);
@@ -185,7 +250,7 @@ export function SpotlightCard({ children, className = "", spotlight = "rgba(179,
     <div ref={ref} onPointerMove={onMove} className={`group/spot relative overflow-hidden ${className}`}>
       <span
         aria-hidden
-        className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-500 group-hover/spot:opacity-100"
+        className={`pointer-events-none absolute inset-0 transition-opacity duration-500 ${touch ? "opacity-70" : "opacity-0 group-hover/spot:opacity-100"}`}
         style={{ background: `radial-gradient(300px circle at var(--sx, 50%) var(--sy, 50%), ${spotlight}, transparent 65%)` }}
       />
       {children}
@@ -310,10 +375,26 @@ export function TextGenerate({ text, className = "", delay = 0, once = true, gra
 
 export function TiltCard({ children, className = "", max = 9 }) {
   const ref = useRef(null);
+  const touch = useIsTouch();
   const px = useMotionValue(0.5);
   const py = useMotionValue(0.5);
   const rotateX = useSpring(useTransform(py, [0, 1], [max, -max]), { stiffness: 180, damping: 18 });
   const rotateY = useSpring(useTransform(px, [0, 1], [-max, max]), { stiffness: 180, damping: 18 });
+
+  // mobile: the card keeps slowly tilting on its own so the 3D effect is always alive
+  useEffect(() => {
+    if (!touch || !ref.current) return;
+    const el = ref.current;
+    const cx = animate(0.34, 0.66, {
+      duration: 5.5, repeat: Infinity, repeatType: "mirror", ease: "easeInOut",
+      onUpdate: (v) => { px.set(v); el.style.setProperty("--gx", `${v * 100}%`); },
+    });
+    const cy = animate(0.62, 0.38, {
+      duration: 6.5, repeat: Infinity, repeatType: "mirror", ease: "easeInOut",
+      onUpdate: (v) => { py.set(v); el.style.setProperty("--gy", `${v * 100}%`); },
+    });
+    return () => { cx.stop(); cy.stop(); };
+  }, [touch, px, py]);
 
   const onMove = (e) => {
     const r = ref.current.getBoundingClientRect();
@@ -340,7 +421,7 @@ export function TiltCard({ children, className = "", max = 9 }) {
       >
         <span
           aria-hidden
-          className="pointer-events-none absolute inset-0 z-10 rounded-[inherit] opacity-0 transition-opacity duration-300 group-hover/tilt:opacity-100"
+          className={`pointer-events-none absolute inset-0 z-10 rounded-[inherit] transition-opacity duration-300 ${touch ? "opacity-60" : "opacity-0 group-hover/tilt:opacity-100"}`}
           style={{ background: "radial-gradient(340px circle at var(--gx,50%) var(--gy,50%), rgba(250,246,239,0.16), transparent 60%)" }}
         />
         {children}
@@ -524,6 +605,9 @@ const PIXEL_SHADES = [
 ];
 
 export function PixelCard({ children, className = "", variant = "crimson", gap = 6, pixelSize = 22, childrenClassName = "" }) {
+  const touch = useIsTouch();
+  const touchRef = useRef(false);
+  touchRef.current = touch;
   const canvasRef = useRef(null);
   const stateRef = useRef({ gx: -999, gy: -999, pixels: [], w: 0, h: 0, raf: null, t: 0 });
 
@@ -558,6 +642,11 @@ export function PixelCard({ children, className = "", variant = "crimson", gap =
       const ctx = canvas.getContext("2d");
       ctx.clearRect(0, 0, st.w, st.h);
       st.t += 0.05;
+      if (touchRef.current) {
+        // mobile: an invisible finger roams the card, waking the pixels
+        st.gx = st.w / 2 + Math.sin(st.t * 0.22) * st.w * 0.34;
+        st.gy = st.h / 2 + Math.cos(st.t * 0.16) * st.h * 0.3;
+      }
       for (const p of st.pixels) {
         const dx = p.ox + step / 2 - st.gx;
         const dy = p.oy + step / 2 - st.gy;
@@ -606,6 +695,7 @@ export function PixelCard({ children, className = "", variant = "crimson", gap =
 
 export function ProfileCard({ photo, name, title, socials = [], className = "" }) {
   const ref = useRef(null);
+  const touch = useIsTouch();
   const px = useMotionValue(0.5);
   const py = useMotionValue(0.5);
   const rotateX = useSpring(useTransform(py, [0, 1], [8, -8]), { stiffness: 160, damping: 16 });
@@ -616,6 +706,21 @@ export function ProfileCard({ photo, name, title, socials = [], className = "" }
     [glowX, glowY],
     ([gx, gy]) => `radial-gradient(300px circle at ${gx} ${gy}, rgba(201,162,75,0.28), transparent 70%)`
   );
+
+  // mobile: the card breathes with a slow 3D sway
+  useEffect(() => {
+    if (!touch || !ref.current) return;
+    const el = ref.current;
+    const cx = animate(0.38, 0.62, {
+      duration: 6, repeat: Infinity, repeatType: "mirror", ease: "easeInOut",
+      onUpdate: (v) => { px.set(v); el.style.setProperty("--gx", `${v * 100}%`); },
+    });
+    const cy = animate(0.58, 0.42, {
+      duration: 7, repeat: Infinity, repeatType: "mirror", ease: "easeInOut",
+      onUpdate: (v) => { py.set(v); el.style.setProperty("--gy", `${v * 100}%`); },
+    });
+    return () => { cx.stop(); cy.stop(); };
+  }, [touch, px, py]);
 
   const onMove = (e) => {
     const r = ref.current.getBoundingClientRect();

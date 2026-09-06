@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { HashRouter, Route, Routes, useLocation } from "react-router-dom";
+import { BrowserRouter, Route, Routes, useLocation } from "react-router-dom";
 import { AnimatePresence, motion } from "motion/react";
 import { SiteProvider } from "./context/SiteContext";
 import Loader from "./components/Loader";
@@ -70,7 +70,7 @@ export default function App() {
 
   return (
     <SiteProvider>
-      <HashRouter>
+      <BrowserRouter>
         <ScrollToTop />
         <AnimatePresence>{loading && <Loader key="loader" />}</AnimatePresence>
         {!loading && (
@@ -87,7 +87,7 @@ export default function App() {
             <Footer />
           </>
         )}
-      </HashRouter>
+      </BrowserRouter>
     </SiteProvider>
   );
 }

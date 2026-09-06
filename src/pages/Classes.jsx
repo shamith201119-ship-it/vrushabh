@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { motion } from "motion/react";
 import { useSite } from "../context/SiteContext";
 import { Reveal, SectionHead } from "../components/ui";
-import { BorderBeam, Carousel, GridPattern, Meteors, Sparkles, SpotlightCard } from "../components/fx";
+import { BorderBeam, GridPattern, Meteors, Sparkles, SpotlightCard } from "../components/fx";
 
 const belts = [
   { color: "#f5f0e6", name: "White", note: "You begin. Pure and open." },
@@ -31,7 +31,7 @@ export default function Classes() {
       <section className="container-x relative pb-20">
         <div className="card relative overflow-hidden">
           <BorderBeam />
-          <div className="grid grid-cols-[1.2fr_1fr_1fr] border-b border-line bg-band px-6 py-4 text-[11px] font-bold uppercase tracking-[0.2em] text-onband-faint sm:px-10">
+          <div className="hidden grid-cols-[1.2fr_1fr_1fr] border-b border-line bg-band px-6 py-4 text-[11px] font-bold uppercase tracking-[0.2em] text-onband-faint sm:grid sm:px-10">
             <span>Day</span>
             <span>Kids (5–15)</span>
             <span>Adults (16+)</span>
@@ -39,16 +39,19 @@ export default function Classes() {
           {content.timings.map((row, i) => (
             <motion.div
               key={row.days}
-              className={`grid grid-cols-[1.2fr_1fr_1fr] items-center px-6 py-5 text-sm sm:px-10 ${i % 2 ? "bg-surface" : "bg-bg"}`}
+              className={`grid grid-cols-1 gap-1.5 px-6 py-4 text-sm sm:grid-cols-[1.2fr_1fr_1fr] sm:items-center sm:gap-0 sm:px-10 sm:py-5 ${i % 2 ? "bg-surface" : "bg-bg"}`}
               initial={{ opacity: 0, x: -24 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true, margin: "-40px" }}
               transition={{ delay: i * 0.06, duration: 0.5 }}
-              whileHover={{ x: 4 }}
             >
               <span className="font-bold">{row.days}</span>
-              <span className={row.kids === "Holiday" ? "text-muted" : "font-semibold text-ink"}>{row.kids}</span>
-              <span className={row.adults === "Holiday" ? "text-muted" : "font-semibold text-ink"}>{row.adults}</span>
+              <span className={`text-xs sm:text-sm ${row.kids === "Holiday" ? "text-muted" : "font-semibold text-ink"}`}>
+                <span className="mr-2 font-bold uppercase tracking-wider text-muted sm:hidden">Kids:</span>{row.kids}
+              </span>
+              <span className={`text-xs sm:text-sm ${row.adults === "Holiday" ? "text-muted" : "font-semibold text-ink"}`}>
+                <span className="mr-2 font-bold uppercase tracking-wider text-muted sm:hidden">Adults:</span>{row.adults}
+              </span>
             </motion.div>
           ))}
         </div>
@@ -67,7 +70,7 @@ export default function Classes() {
         </div>
       </section>
 
-      {/* belt journey — 3D carousel */}
+      {/* belt journey — fitted wrap grid */}
       <section className="ink-section relative overflow-hidden py-20 sm:py-24">
         <GridPattern id="belts" />
         <Meteors count={5} />
@@ -75,28 +78,26 @@ export default function Classes() {
         <span className="kanji pointer-events-none absolute right-4 top-4 select-none text-[10rem] leading-none text-onband/[0.05]">帯</span>
         <div className="container-x relative">
           <SectionHead light kicker="The belt journey" title="Every belt is earned, never given" sub="You test for a new belt every few months. Small steps, big pride." />
-          <Reveal className="mt-12">
-            <Carousel
-              baseWidth={620}
-              items={belts.map((b) => (
-                <div className="flex h-full items-center justify-center">
+          <div className="mt-12 flex flex-wrap justify-center gap-4 sm:gap-5">
+            {belts.map((b, i) => (
+              <Reveal key={b.name} delay={i * 0.06}>
+                <motion.div
+                  className="w-[104px] rounded-2xl border border-band-line bg-band-soft px-3 py-5 text-center sm:w-32 sm:px-4"
+                  whileHover={{ y: -6 }}
+                  transition={{ type: "spring", stiffness: 300, damping: 18 }}
+                >
                   <motion.div
-                    className="w-64 rounded-3xl border border-band-line bg-band-soft p-8 text-center backdrop-blur-sm"
-                    whileHover={{ scale: 1.03 }}
-                  >
-                    <motion.div
-                      className="mx-auto h-28 w-4 rounded-full border border-band-line shadow-[0_14px_30px_-8px_rgba(0,0,0,0.35)]"
-                      style={{ background: b.color }}
-                      animate={{ y: [0, -6, 0] }}
-                      transition={{ repeat: Infinity, duration: 3, ease: "easeInOut" }}
-                    />
-                    <p className="display mt-5 text-2xl text-onband">{b.name}</p>
-                    <p className="mt-2 text-xs leading-relaxed text-onband-faint">{b.note}</p>
-                  </motion.div>
-                </div>
-              ))}
-            />
-          </Reveal>
+                    className="mx-auto h-16 w-3 rounded-full border border-band-line shadow-[0_10px_20px_-6px_rgba(0,0,0,0.5)] sm:h-20 sm:w-3.5"
+                    style={{ background: b.color }}
+                    animate={{ y: [0, -4, 0] }}
+                    transition={{ repeat: Infinity, duration: 3, ease: "easeInOut", delay: i * 0.25 }}
+                  />
+                  <p className="mt-3 text-xs font-bold text-onband sm:text-sm">{b.name}</p>
+                  <p className="mt-1 hidden text-[10px] leading-relaxed text-onband-faint sm:block">{b.note}</p>
+                </motion.div>
+              </Reveal>
+            ))}
+          </div>
         </div>
       </section>
 

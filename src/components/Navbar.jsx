@@ -71,7 +71,7 @@ export default function Navbar() {
         <div className="container-x flex h-[72px] items-center justify-between">
           <Link to="/" className="flex items-center gap-3">
             <LogoMark size={38} />
-            <span className="display text-lg tracking-wide">
+            <span className="display text-base tracking-wide sm:text-lg">
               {content.schoolName.split(" ")[0]}{" "}
               <span className="text-crimson">{content.schoolName.split(" ").slice(1).join(" ")}</span>
             </span>

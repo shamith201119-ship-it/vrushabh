@@ -6,12 +6,13 @@ import { Counter, Marquee, Reveal, SectionHead } from "../components/ui";
 import {
   BackgroundBeams, BorderBeam, DotPattern, GridPattern, InfiniteMovingCards,
   Meteors, MovingBorderLink, PixelCard, ProfileCard, ShinyText, Sparkles,
-  SpotlightCard, TextGenerate, TiltCard, WordRotate,
+  SpotlightCard, TextGenerate, TiltCard, WordRotate, useIsTouch,
 } from "../components/fx";
 
 /* ================= HERO — dark, beams, meteors ================= */
 function Hero() {
   const { content } = useSite();
+  const touch = useIsTouch();
   const ref = useRef(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end start"] });
   const yPhoto = useTransform(scrollYProgress, [0, 1], [0, 110]);
@@ -24,7 +25,7 @@ function Hero() {
       <GridPattern id="hero" />
       <span className="kanji pointer-events-none absolute -right-6 bottom-0 select-none text-[16rem] leading-none text-onband/[0.05]">武</span>
 
-      <motion.div style={{ opacity }} className="container-x relative grid items-center gap-16 pb-24 pt-20 sm:pt-24 lg:grid-cols-[1.1fr_0.9fr]">
+      <motion.div style={{ opacity }} className="container-x relative grid items-center gap-12 pb-16 pt-12 sm:gap-16 sm:pb-24 sm:pt-24 lg:grid-cols-[1.1fr_0.9fr]">
         <div>
           <motion.span
             className="chip !border-band-line !bg-band-soft !text-onband-soft"
@@ -39,7 +40,7 @@ function Hero() {
             {content.since} · Bengaluru
           </motion.span>
 
-          <h1 className="display mt-7 text-5xl text-onband sm:text-6xl lg:text-[4.4rem]">
+          <h1 className="display mt-6 text-[2.6rem] leading-[1.06] text-onband sm:mt-7 sm:text-6xl sm:leading-[1.08] lg:text-[4.4rem]">
             <TextGenerate text="Learn karate." />
             <br />
             <TextGenerate text="Grow strong." delay={0.25} />
@@ -54,7 +55,7 @@ function Hero() {
           </h1>
 
           <motion.p
-            className="mt-7 max-w-md text-base leading-relaxed text-onband-soft"
+            className="mt-5 max-w-md text-sm leading-relaxed text-onband-soft sm:mt-7 sm:text-base"
             initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.9, duration: 0.7 }}
@@ -63,12 +64,12 @@ function Hero() {
           </motion.p>
 
           <motion.div
-            className="mt-10 flex flex-wrap items-center gap-4"
+            className="mt-8 flex w-full flex-col items-stretch gap-3 sm:mt-10 sm:w-auto sm:flex-row sm:items-center sm:gap-4"
             initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 1.05, duration: 0.7 }}
           >
-            <MovingBorderLink to="/book">
+            <MovingBorderLink to="/book" className="w-full sm:w-auto" innerClassName="w-full justify-center">
               Book Your Seat — ₹{content.bookingFee}
               <span aria-hidden>→</span>
             </MovingBorderLink>
@@ -78,7 +79,7 @@ function Hero() {
           </motion.div>
 
           <motion.div
-            className="mt-11 flex flex-wrap gap-x-8 gap-y-3 text-sm font-semibold text-onband-soft"
+            className="mt-8 flex flex-wrap gap-x-6 gap-y-2.5 text-[13px] font-semibold text-onband-soft sm:mt-11 sm:gap-x-8 sm:gap-y-3 sm:text-sm"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 1.25 }}
@@ -94,7 +95,7 @@ function Hero() {
 
         {/* karate fighter illustration in tilt frame */}
         <motion.div
-          className="group/tilt relative mx-auto w-full max-w-md"
+          className="group/tilt relative mx-auto w-full max-w-[320px] sm:max-w-md"
           style={{ y: yPhoto }}
           initial={{ opacity: 0, scale: 0.92 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -108,8 +109,10 @@ function Hero() {
                 alt="Karate fighter in action"
                 className="w-full object-contain"
                 initial={{ scale: 1.06 }}
-                animate={{ scale: 1 }}
-                transition={{ duration: 1.4, ease: [0.22, 1, 0.36, 1] }}
+                animate={touch ? { scale: [1, 1.035, 1], y: [0, -8, 0] } : { scale: 1 }}
+                transition={touch
+                  ? { duration: 7, repeat: Infinity, ease: "easeInOut", delay: 1.6 }
+                  : { duration: 1.4, ease: [0.22, 1, 0.36, 1] }}
               />
               <span aria-hidden className="pointer-events-none absolute inset-0 rounded-[28px] bg-gradient-to-t from-band/70 via-transparent to-transparent" />
               <motion.span
@@ -123,20 +126,20 @@ function Hero() {
           </TiltCard>
 
           <motion.div
-            className="absolute -left-9 top-14 rounded-2xl border border-band-line bg-band/85 px-4 py-3 shadow-xl backdrop-blur-md"
+            className="absolute -left-1 top-8 rounded-2xl border border-band-line bg-band/85 px-3 py-2 shadow-xl backdrop-blur-md sm:-left-9 sm:top-14 sm:px-4 sm:py-3"
             animate={{ y: [0, -10, 0] }}
             transition={{ repeat: Infinity, duration: 3.6, ease: "easeInOut" }}
           >
-            <p className="display text-2xl text-gold"><Counter to={content.stats.students} />+</p>
+            <p className="display text-xl text-gold sm:text-2xl"><Counter to={content.stats.students} />+</p>
             <p className="text-[11px] font-bold uppercase tracking-widest text-onband-faint">Students</p>
           </motion.div>
 
           <motion.div
-            className="absolute -right-6 bottom-16 rounded-2xl border border-crimson/40 bg-crimson px-4 py-3 text-paper shadow-[0_20px_40px_-16px_rgba(179,36,31,0.8)]"
+            className="absolute -right-1 bottom-24 rounded-2xl border border-crimson/40 bg-crimson px-3 py-2 text-paper shadow-[0_20px_40px_-16px_rgba(179,36,31,0.8)] sm:-right-6 sm:bottom-16 sm:px-4 sm:py-3"
             animate={{ y: [0, 10, 0] }}
             transition={{ repeat: Infinity, duration: 4, ease: "easeInOut", delay: 0.7 }}
           >
-            <p className="display text-2xl"><Counter to={content.stats.medals} />+</p>
+            <p className="display text-xl sm:text-2xl"><Counter to={content.stats.medals} />+</p>
             <p className="text-[11px] font-bold uppercase tracking-widest text-paper/75">Medals won</p>
           </motion.div>
         </motion.div>

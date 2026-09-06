@@ -30,7 +30,7 @@ export default function FloatingSocial() {
 
   return (
     <motion.div
-      className="fixed right-4 top-1/2 z-40 flex -translate-y-1/2 flex-col gap-3"
+      className="fixed bottom-5 right-4 z-40 flex flex-row gap-3 sm:bottom-auto sm:right-4 sm:top-1/2 sm:-translate-y-1/2 sm:flex-col"
       initial={{ opacity: 0, x: 60 }}
       animate={show ? { opacity: 1, x: 0 } : { opacity: 0, x: 60 }}
       transition={{ type: "spring", stiffness: 260, damping: 24 }}
